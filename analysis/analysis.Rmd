@@ -459,8 +459,8 @@ write.table(monoaffected, file="monoaffected.csv", row.names=FALSE,
 ```
 
 We flag `r nrow(monoaffected_sig)` genes different between `affected` and
-`unaffected` monocytes, using a FDR cutoff of 0.1. Of those `r
-nrow(subset(monoaffected_sig, log2FoldChange > 0))` are up in the `affected`
+`unaffected` monocytes, using a FDR cutoff of 0.1. Of those
+`r nrow(subset(monoaffected_sig, log2FoldChange > 0))` are up in the `affected`
 samples and `r nrow(subset(monoaffected_sig, log2FoldChange < 0))` are down in
 the `affected` samples.
 
