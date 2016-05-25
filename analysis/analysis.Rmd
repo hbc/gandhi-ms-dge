@@ -71,7 +71,7 @@ all the same gender and should be similar in age. We'll plot those to make
 sure I didn't screw anything up.
 
 ```{r group-plots}
-ggplot(metadata, aes(group, age, color=gender)) +
+ggplot(metadata, aes(group, age, color=gender, size=edss)) +
   geom_jitter() + theme(text=element_text(family='Gill Sans')) +
   scale_color_viridis(discrete=TRUE)
 ```
@@ -359,6 +359,24 @@ samples in the monocytes, using a FDR cutoff of 0.1. Of those
 are up in the `SP` samples and `r nrow(subset(monosp_vs_hc_sig, log2FoldChange < 0))`
 are down in the `SP` samples.
 
+### SP vs RR
+```{r mono-sp-rr}
+monosp_vs_rr = results(monodds, contrast=c("phenotype", "SP", "RR"))
+monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
+plotMA(monosp_vs_rr)
+monosp_vs_rr = monosp_vs_rr[order(monosp_vs_rr$padj),]
+write.table(monosp_vs_rr, file="mono-sp-vs-rr.csv", row.names=TRUE,
+            col.names=TRUE, quote=FALSE, sep=",")
+
+```
+
+We flag `r nrow(monosp_vs_rr_sig)` genes different between `SP` and `RR`
+samples in the monocytes, using a FDR cutoff of 0.1. Of those
+`r nrow(subset(monosp_vs_rr_sig, log2FoldChange > 0))`
+are up in the `SP` samples and `r nrow(subset(monosp_vs_rr_sig, log2FoldChange < 0))`
+are down in the `SP` samples.
+
+
 ## T-cells
 ```{r tcells-deseq2}
 design = ~group+phenotype
@@ -401,6 +419,22 @@ samples in the T-cells, using a FDR cutoff of 0.1. Of those
 are up in the `SP` samples and `r nrow(subset(tcellsp_vs_hc_sig, log2FoldChange < 0))`
 are down in the `SP` samples.
 
+### SP vs RR
+```{r tcells-sp-rr}
+tcellsp_vs_rr = results(tcelldds, contrast=c("phenotype", "SP", "RR"))
+tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
+plotMA(tcellsp_vs_rr)
+tcellsp_vs_rr = tcellsp_vs_rr[order(tcellsp_vs_rr$padj),]
+write.table(tcellsp_vs_rr, file="tcell-sp-vs-rr.csv", row.names=TRUE,
+            col.names=TRUE, quote=FALSE, sep=",")
+```
+
+We flag `r nrow(tcellsp_vs_rr_sig)` genes different between `sp` and `RR`
+samples in the T-cells, using a FDR cutoff of 0.1. Of those
+`r nrow(subset(tcellsp_vs_rr_sig, log2FoldChange > 0))`
+are up in the `SP` samples and `r nrow(subset(tcellsp_vs_rr_sig, log2FoldChange < 0))`
+are down in the `SP` samples.
+
 # Pathway analysis
 # Summary
 # Output tables
@@ -409,6 +443,10 @@ are down in the `SP` samples.
 
 [Monocyte SP vs HC](mono-sp-vs-hc.csv)
 
+[Monocyte SP vs RR](mono-sp-vs-rr.csv)
+
 [T-Cell RR vs HC](tcell-rr-vs-hc.csv)
 
 [T-Cell SP vs HC](tcell-sp-vs-hc.csv)
+
+[T-Cell SP vs RR](tcell-sp-vs-rr.csv)
