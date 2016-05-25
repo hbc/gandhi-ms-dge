@@ -333,7 +333,8 @@ monorr_vs_hc = results(monodds, contrast=c("phenotype", "RR", "HC"))
 plotMA(monorr_vs_hc)
 monorr_vs_hc_sig = subset(monorr_vs_hc, padj < 0.1)
 monorr_vs_hc = monorr_vs_hc[order(monorr_vs_hc$padj),]
-write.table(monorr_vs_hc, file="mono-rr-vs-hc.csv", row.names=TRUE,
+monorr_vs_hc = cbind(data.frame(gene=rownames(monorr_vs_hc)), monorr_vs_hc)
+write.table(monorr_vs_hc, file="mono-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
 
@@ -349,7 +350,8 @@ monosp_vs_hc = results(monodds, contrast=c("phenotype", "SP", "HC"))
 monosp_vs_hc_sig = subset(monosp_vs_hc, padj < 0.1)
 plotMA(monosp_vs_hc)
 monosp_vs_hc = monosp_vs_hc[order(monosp_vs_hc$padj),]
-write.table(monosp_vs_hc, file="mono-sp-vs-hc.csv", row.names=TRUE,
+monosp_vs_hc = cbind(data.frame(gene=rownames(monosp_vs_hc)), monosp_vs_hc)
+write.table(monosp_vs_hc, file="mono-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
 
@@ -365,9 +367,9 @@ monosp_vs_rr = results(monodds, contrast=c("phenotype", "SP", "RR"))
 monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
 plotMA(monosp_vs_rr)
 monosp_vs_rr = monosp_vs_rr[order(monosp_vs_rr$padj),]
-write.table(monosp_vs_rr, file="mono-sp-vs-rr.csv", row.names=TRUE,
+monosp_vs_rr = cbind(data.frame(gene=rownames(monosp_vs_rr)), monosp_vs_rr)
+write.table(monosp_vs_rr, file="mono-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
-
 ```
 
 We flag `r nrow(monosp_vs_rr_sig)` genes different between `SP` and `RR`
@@ -393,7 +395,8 @@ tcellrr_vs_hc = results(tcelldds, contrast=c("phenotype", "RR", "HC"))
 tcellrr_vs_hc_sig = subset(tcellrr_vs_hc, padj < 0.1)
 plotMA(tcellrr_vs_hc)
 tcellrr_vs_hc = tcellrr_vs_hc[order(tcellrr_vs_hc$padj),]
-write.table(tcellrr_vs_hc, file="tcell-rr-vs-hc.csv", row.names=TRUE,
+tcellrr_vs_hc = cbind(data.frame(gene=rownames(tcellrr_vs_hc)), tcellrr_vs_hc)
+write.table(tcellrr_vs_hc, file="tcell-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
 
@@ -409,7 +412,8 @@ tcellsp_vs_hc = results(tcelldds, contrast=c("phenotype", "SP", "HC"))
 tcellsp_vs_hc_sig = subset(tcellsp_vs_hc, padj < 0.1)
 plotMA(tcellsp_vs_hc)
 tcellsp_vs_hc = tcellsp_vs_hc[order(tcellsp_vs_hc$padj),]
-write.table(tcellsp_vs_hc, file="tcell-sp-vs-hc.csv", row.names=TRUE,
+tcellsp_vs_hc = cbind(data.frame(gene=rownames(tcellsp_vs_hc)), tcellsp_vs_hc)
+write.table(tcellsp_vs_hc, file="tcell-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
 
@@ -425,7 +429,8 @@ tcellsp_vs_rr = results(tcelldds, contrast=c("phenotype", "SP", "RR"))
 tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
 plotMA(tcellsp_vs_rr)
 tcellsp_vs_rr = tcellsp_vs_rr[order(tcellsp_vs_rr$padj),]
-write.table(tcellsp_vs_rr, file="tcell-sp-vs-rr.csv", row.names=TRUE,
+tcellsp_vs_rr = cbind(data.frame(gene=rownames(tcellsp_vs_rr)), tcellsp_vs_rr)
+write.table(tcellsp_vs_rr, file="tcell-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
 
@@ -434,6 +439,53 @@ samples in the T-cells, using a FDR cutoff of 0.1. Of those
 `r nrow(subset(tcellsp_vs_rr_sig, log2FoldChange > 0))`
 are up in the `SP` samples and `r nrow(subset(tcellsp_vs_rr_sig, log2FoldChange < 0))`
 are down in the `SP` samples.
+
+## MS vs control
+### MS vs control - monocytes
+```{r ms-vs-control-monocytes}
+monometa$affected = ifelse(monometa$phenotype == "HC", "unaffected", "affected")
+design = ~group+affected
+monoaffecteddds = DESeqDataSetFromMatrix(countData=monomelt,
+                                 colData=monometa, design=design)
+monoaffecteddds = estimateSizeFactors(monoaffecteddds)
+monoaffecteddds = DESeq(monoaffecteddds)
+monoaffected = results(monoaffecteddds, contrast=c("affected", "affected", "unaffected"))
+monoaffected_sig = subset(monoaffected, padj < 0.1)
+plotMA(monoaffected)
+monoaffected = monoaffected[order(monoaffected$padj),]
+monoaffected = cbind(data.frame(gene=rownames(monoaffected)), monoaffected)
+write.table(monoaffected, file="monoaffected.csv", row.names=FALSE,
+            col.names=TRUE, quote=FALSE, sep=",")
+```
+
+We flag `r nrow(monoaffected_sig)` genes different between `affected` and
+`unaffected` monocytes, using a FDR cutoff of 0.1. Of those `r
+nrow(subset(monoaffected_sig, log2FoldChange > 0))` are up in the `affected`
+samples and `r nrow(subset(monoaffected_sig, log2FoldChange < 0))` are down in
+the `affected` samples.
+
+### MS vs control - Tcells
+```{r ms-vs-control-tcells}
+tcellmeta$affected = ifelse(tcellmeta$phenotype == "HC", "unaffected", "affected")
+design = ~group+affected
+tcellaffecteddds = DESeqDataSetFromMatrix(countData=tcellmelt,
+                                 colData=tcellmeta, design=design)
+tcellaffecteddds = estimateSizeFactors(tcellaffecteddds)
+tcellaffecteddds = DESeq(tcellaffecteddds)
+tcellaffected = results(tcellaffecteddds, contrast=c("affected", "affected", "unaffected"))
+tcellaffected_sig = subset(tcellaffected, padj < 0.1)
+plotMA(tcellaffected)
+tcellaffected = tcellaffected[order(tcellaffected$padj),]
+tcellaffected = cbind(data.frame(gene=rownames(tcellaffected)), tcellaffected)
+write.table(tcellaffected, file="tcellaffected.csv", row.names=FALSE,
+            col.names=TRUE, quote=FALSE, sep=",")
+```
+
+We flag `r nrow(tcellaffected_sig)` genes different between `affected` and
+`unaffected` tcells, using a FDR cutoff of 0.1. Of those
+`r nrow(subset(tcellaffected_sig, log2FoldChange > 0))` are up in the `affected`
+samples and `r nrow(subset(tcellaffected_sig, log2FoldChange < 0))` are down in
+the `affected` samples.
 
 # Pathway analysis
 # Summary
@@ -445,8 +497,12 @@ are down in the `SP` samples.
 
 [Monocyte SP vs RR](mono-sp-vs-rr.csv)
 
+[Monocyte affected vs unaffected](monoaffected.csv)
+
 [T-Cell RR vs HC](tcell-rr-vs-hc.csv)
 
 [T-Cell SP vs HC](tcell-sp-vs-hc.csv)
 
 [T-Cell SP vs RR](tcell-sp-vs-rr.csv)
+
+[T-cell affected vs unaffected](tcellaffected.csv)
