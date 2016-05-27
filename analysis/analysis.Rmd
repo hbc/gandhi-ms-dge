@@ -333,7 +333,7 @@ monorr_vs_hc = results(monodds, contrast=c("phenotype", "RR", "HC"))
 plotMA(monorr_vs_hc)
 monorr_vs_hc_sig = subset(monorr_vs_hc, padj < 0.1)
 monorr_vs_hc = monorr_vs_hc[order(monorr_vs_hc$padj),]
-monorr_vs_hc = cbind(data.frame(gene=rownames(monorr_vs_hc)), monorr_vs_hc)
+monorr_vs_hc = data.frame(cbind(data.frame(gene=rownames(monorr_vs_hc)), monorr_vs_hc))
 write.table(monorr_vs_hc, file="mono-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -350,7 +350,7 @@ monosp_vs_hc = results(monodds, contrast=c("phenotype", "SP", "HC"))
 monosp_vs_hc_sig = subset(monosp_vs_hc, padj < 0.1)
 plotMA(monosp_vs_hc)
 monosp_vs_hc = monosp_vs_hc[order(monosp_vs_hc$padj),]
-monosp_vs_hc = cbind(data.frame(gene=rownames(monosp_vs_hc)), monosp_vs_hc)
+monosp_vs_hc = data.frame(cbind(data.frame(gene=rownames(monosp_vs_hc)), monosp_vs_hc))
 write.table(monosp_vs_hc, file="mono-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -367,7 +367,7 @@ monosp_vs_rr = results(monodds, contrast=c("phenotype", "SP", "RR"))
 monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
 plotMA(monosp_vs_rr)
 monosp_vs_rr = monosp_vs_rr[order(monosp_vs_rr$padj),]
-monosp_vs_rr = cbind(data.frame(gene=rownames(monosp_vs_rr)), monosp_vs_rr)
+monosp_vs_rr = data.frame(cbind(data.frame(gene=rownames(monosp_vs_rr)), monosp_vs_rr))
 write.table(monosp_vs_rr, file="mono-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -395,7 +395,7 @@ tcellrr_vs_hc = results(tcelldds, contrast=c("phenotype", "RR", "HC"))
 tcellrr_vs_hc_sig = subset(tcellrr_vs_hc, padj < 0.1)
 plotMA(tcellrr_vs_hc)
 tcellrr_vs_hc = tcellrr_vs_hc[order(tcellrr_vs_hc$padj),]
-tcellrr_vs_hc = cbind(data.frame(gene=rownames(tcellrr_vs_hc)), tcellrr_vs_hc)
+tcellrr_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellrr_vs_hc)), tcellrr_vs_hc))
 write.table(tcellrr_vs_hc, file="tcell-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -412,7 +412,7 @@ tcellsp_vs_hc = results(tcelldds, contrast=c("phenotype", "SP", "HC"))
 tcellsp_vs_hc_sig = subset(tcellsp_vs_hc, padj < 0.1)
 plotMA(tcellsp_vs_hc)
 tcellsp_vs_hc = tcellsp_vs_hc[order(tcellsp_vs_hc$padj),]
-tcellsp_vs_hc = cbind(data.frame(gene=rownames(tcellsp_vs_hc)), tcellsp_vs_hc)
+tcellsp_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_hc)), tcellsp_vs_hc))
 write.table(tcellsp_vs_hc, file="tcell-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -429,7 +429,7 @@ tcellsp_vs_rr = results(tcelldds, contrast=c("phenotype", "SP", "RR"))
 tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
 plotMA(tcellsp_vs_rr)
 tcellsp_vs_rr = tcellsp_vs_rr[order(tcellsp_vs_rr$padj),]
-tcellsp_vs_rr = cbind(data.frame(gene=rownames(tcellsp_vs_rr)), tcellsp_vs_rr)
+tcellsp_vs_rr = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_rr)), tcellsp_vs_rr))
 write.table(tcellsp_vs_rr, file="tcell-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -453,7 +453,7 @@ monoaffected = results(monoaffecteddds, contrast=c("affected", "affected", "unaf
 monoaffected_sig = subset(monoaffected, padj < 0.1)
 plotMA(monoaffected)
 monoaffected = monoaffected[order(monoaffected$padj),]
-monoaffected = cbind(data.frame(gene=rownames(monoaffected)), monoaffected)
+monoaffected = data.frame(cbind(data.frame(gene=rownames(monoaffected)), monoaffected))
 write.table(monoaffected, file="monoaffected.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -476,7 +476,7 @@ tcellaffected = results(tcellaffecteddds, contrast=c("affected", "affected", "un
 tcellaffected_sig = subset(tcellaffected, padj < 0.1)
 plotMA(tcellaffected)
 tcellaffected = tcellaffected[order(tcellaffected$padj),]
-tcellaffected = cbind(data.frame(gene=rownames(tcellaffected)), tcellaffected)
+tcellaffected = data.frame(cbind(data.frame(gene=rownames(tcellaffected)), tcellaffected))
 write.table(tcellaffected, file="tcellaffected.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -506,3 +506,20 @@ the `affected` samples.
 [T-Cell SP vs RR](tcell-sp-vs-rr.csv)
 
 [T-cell affected vs unaffected](tcellaffected.csv)
+
+# Normalized counts
+
+```{r write-normalized-counts}
+nmonocounts = counts(monodds, normalized=TRUE)
+nmonocounts = cbind(data.frame(gene=rownames(nmonocounts)), nmonocounts)
+write.table(nmonocounts, file="monocounts_normalized.csv", row.names=FALSE,
+            col.names=TRUE, sep=",", quote=FALSE)
+ntcellcounts = counts(tcelldds, normalized=TRUE)
+ntcellcounts = cbind(data.frame(gene=rownames(ntcellcounts)), ntcellcounts)
+write.table(ntcellcounts, file="tcellcounts_normalized.csv", row.names=FALSE,
+            col.names=TRUE, sep=",", quote=FALSE)
+```
+
+[Normalized counts for monocytes](monocounts_normalized.csv)
+
+[Normalized counts for T cells](tcellcounts_normalized.csv)
