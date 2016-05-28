@@ -62,6 +62,7 @@ metadata = read_csv("../metadata/sample-info.csv") %>%
   tidyr::separate(samplename, c("sample", "celltype"), sep="_")
 metadata$phenotype = substr(metadata$sample, 1, 2)
 metadata$group = as.factor(substr(metadata$sample, 3, 3))
+metadata$treated = ifelse(metadata$past_treat == "none", "untreated", "treated")
 head(metadata)
 ```
 
@@ -174,10 +175,12 @@ comps = comps %>% left_join(metadata, by=c("Name"="cell"))
 
 ```{r pca-plotter}
 pca_plot = function(comps, nc1, nc2, colorby) {
+  library(cowplot)
+  library(viridis)
    c1str = paste0("PC", nc1)
    c2str = paste0("PC", nc2)
   ggplot(comps, aes_string(c1str, c2str, color=colorby)) +
-    geom_point() + theme_bw() +
+    geom_point() +
     xlab(paste0(c1str, ": ", round(pc$percentVar[nc1] * 100), "% variance")) +
     ylab(paste0(c2str, ": ", round(pc$percentVar[nc2] * 100), "% variance"))
 }
@@ -232,14 +235,23 @@ We can see a separation along component 2 with which `gender` the samples are fr
 
 ```{r PC1-PC2-tcell}
 pca_plot(tcellcomps, 1, 2, "gender")
+pca_plot(tcellcomps, 1, 2, "phenotype")
+pca_plot(tcellcomps, 1, 2, "cur_treat")
+pca_plot(tcellcomps, 1, 2, "past_treat")
+pca_plot(tcellcomps, 1, 2, "duration") + scale_color_viridis()
 ```
 
 But component 1 is a little bit of a mystery, it does kind of separate by
 phenotype, all of the HC samples are clustered on the left and the right is more
 mixed MS/RR.
 
-```{r PC1-PC2-phenotype}
-pca_plot(tcellcomps, 1, 2, "phenotype")
+### PC3-PC4
+```{r PC3-PC4-tcell}
+pca_plot(tcellcomps, 3, 4, "gender")
+pca_plot(tcellcomps, 3, 4, "phenotype")
+pca_plot(tcellcomps, 3, 4, "cur_treat")
+pca_plot(tcellcomps, 3, 4, "past_treat")
+pca_plot(tcellcomps, 3, 4, "duration") + scale_color_viridis()
 ```
 
 ## Monocyte {.tabset}
@@ -248,11 +260,15 @@ with the Tcells.
 
 ### PC1-PC2
 There isn't a separation based on gender in PC1-PC2, it isn't clear what
-is separating these cells because they also don't separate by phenotype:
+is separating these cells because they also don't separate by phenotype.
+They don't seem to separate very well on current treatment or by
 
 ```{r PC1-PC2-mono}
 pca_plot(monocomps, 1, 2, "gender")
 pca_plot(monocomps, 1, 2, "phenotype")
+pca_plot(monocomps, 1, 2, "cur_treat")
+pca_plot(monocomps, 1, 2, "past_treat")
+pca_plot(monocomps, 1, 2, "duration") + scale_color_viridis()
 ```
 
 ### PC3-PC4
@@ -262,6 +278,9 @@ be a larger gender effect than the monocytes.
 ```{r PC3-PC4-mono}
 pca_plot(monocomps, 3, 4, "gender")
 pca_plot(monocomps, 3, 4, "phenotype")
+pca_plot(monocomps, 3, 4, "cur_treat")
+pca_plot(monocomps, 3, 4, "past_treat")
+pca_plot(monocomps, 3, 4, "duration") + scale_color_viridis()
 ```
 
 # Filtering and combining
@@ -331,9 +350,9 @@ plotDispEsts(monodds)
 ```{r mono-hc-rr}
 monorr_vs_hc = results(monodds, contrast=c("phenotype", "RR", "HC"))
 plotMA(monorr_vs_hc)
-monorr_vs_hc_sig = subset(monorr_vs_hc, padj < 0.1)
 monorr_vs_hc = monorr_vs_hc[order(monorr_vs_hc$padj),]
 monorr_vs_hc = data.frame(cbind(data.frame(gene=rownames(monorr_vs_hc)), monorr_vs_hc))
+monorr_vs_hc_sig = subset(monorr_vs_hc, padj < 0.1)
 write.table(monorr_vs_hc, file="mono-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -347,10 +366,10 @@ are down in the `RR` samples.
 ### SP vs HC
 ```{r mono-vs-sp}
 monosp_vs_hc = results(monodds, contrast=c("phenotype", "SP", "HC"))
-monosp_vs_hc_sig = subset(monosp_vs_hc, padj < 0.1)
 plotMA(monosp_vs_hc)
 monosp_vs_hc = monosp_vs_hc[order(monosp_vs_hc$padj),]
 monosp_vs_hc = data.frame(cbind(data.frame(gene=rownames(monosp_vs_hc)), monosp_vs_hc))
+monosp_vs_hc_sig = subset(monosp_vs_hc, padj < 0.1)
 write.table(monosp_vs_hc, file="mono-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -364,10 +383,10 @@ are down in the `SP` samples.
 ### SP vs RR
 ```{r mono-sp-rr}
 monosp_vs_rr = results(monodds, contrast=c("phenotype", "SP", "RR"))
-monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
 plotMA(monosp_vs_rr)
 monosp_vs_rr = monosp_vs_rr[order(monosp_vs_rr$padj),]
 monosp_vs_rr = data.frame(cbind(data.frame(gene=rownames(monosp_vs_rr)), monosp_vs_rr))
+monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
 write.table(monosp_vs_rr, file="mono-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -392,10 +411,10 @@ plotDispEsts(tcelldds)
 ### RR vs HC
 ```{r tcells-hc-rr}
 tcellrr_vs_hc = results(tcelldds, contrast=c("phenotype", "RR", "HC"))
-tcellrr_vs_hc_sig = subset(tcellrr_vs_hc, padj < 0.1)
 plotMA(tcellrr_vs_hc)
 tcellrr_vs_hc = tcellrr_vs_hc[order(tcellrr_vs_hc$padj),]
 tcellrr_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellrr_vs_hc)), tcellrr_vs_hc))
+tcellrr_vs_hc_sig = subset(tcellrr_vs_hc, padj < 0.1)
 write.table(tcellrr_vs_hc, file="tcell-rr-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -409,10 +428,10 @@ are down in the `RR` samples.
 ### SP vs HC
 ```{r tcells-sp-hc}
 tcellsp_vs_hc = results(tcelldds, contrast=c("phenotype", "SP", "HC"))
-tcellsp_vs_hc_sig = subset(tcellsp_vs_hc, padj < 0.1)
 plotMA(tcellsp_vs_hc)
 tcellsp_vs_hc = tcellsp_vs_hc[order(tcellsp_vs_hc$padj),]
 tcellsp_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_hc)), tcellsp_vs_hc))
+tcellsp_vs_hc_sig = subset(tcellsp_vs_hc, padj < 0.1)
 write.table(tcellsp_vs_hc, file="tcell-sp-vs-hc.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -426,10 +445,10 @@ are down in the `SP` samples.
 ### SP vs RR
 ```{r tcells-sp-rr}
 tcellsp_vs_rr = results(tcelldds, contrast=c("phenotype", "SP", "RR"))
-tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
 plotMA(tcellsp_vs_rr)
 tcellsp_vs_rr = tcellsp_vs_rr[order(tcellsp_vs_rr$padj),]
 tcellsp_vs_rr = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_rr)), tcellsp_vs_rr))
+tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
 write.table(tcellsp_vs_rr, file="tcell-sp-vs-rr.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -450,10 +469,10 @@ monoaffecteddds = DESeqDataSetFromMatrix(countData=monomelt,
 monoaffecteddds = estimateSizeFactors(monoaffecteddds)
 monoaffecteddds = DESeq(monoaffecteddds)
 monoaffected = results(monoaffecteddds, contrast=c("affected", "affected", "unaffected"))
-monoaffected_sig = subset(monoaffected, padj < 0.1)
 plotMA(monoaffected)
 monoaffected = monoaffected[order(monoaffected$padj),]
 monoaffected = data.frame(cbind(data.frame(gene=rownames(monoaffected)), monoaffected))
+monoaffected_sig = subset(monoaffected, padj < 0.1)
 write.table(monoaffected, file="monoaffected.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
@@ -473,10 +492,10 @@ tcellaffecteddds = DESeqDataSetFromMatrix(countData=tcellmelt,
 tcellaffecteddds = estimateSizeFactors(tcellaffecteddds)
 tcellaffecteddds = DESeq(tcellaffecteddds)
 tcellaffected = results(tcellaffecteddds, contrast=c("affected", "affected", "unaffected"))
-tcellaffected_sig = subset(tcellaffected, padj < 0.1)
 plotMA(tcellaffected)
 tcellaffected = tcellaffected[order(tcellaffected$padj),]
 tcellaffected = data.frame(cbind(data.frame(gene=rownames(tcellaffected)), tcellaffected))
+tcellaffected_sig = subset(tcellaffected, padj < 0.1)
 write.table(tcellaffected, file="tcellaffected.csv", row.names=FALSE,
             col.names=TRUE, quote=FALSE, sep=",")
 ```
