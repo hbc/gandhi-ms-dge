@@ -507,6 +507,144 @@ samples and `r nrow(subset(tcellaffected_sig, log2FoldChange < 0))` are down in
 the `affected` samples.
 
 # Pathway analysis
+```{r pathway-setup}
+biomart_dataset = "hsapiens_gene_ensembl"
+keggname = "hsa"
+orgdb = "org.Hs.eg.db"
+library(clusterProfiler)
+library(orgdb, character.only=TRUE)
+library(biomaRt)
+mart = biomaRt::useMart(biomart = "ensembl", dataset=biomart_dataset)
+entrez = biomaRt::getBM(attributes = c("entrezgene", "hgnc_symbol"), mart=mart)
+entrez$entrezgene = as.character(entrez$entrezgene)
+entrez$gene = entrez$hgnc_symbol
+gsea_cp = function(res, comparison) {
+  res = data.frame(res)
+  res$ensembl_gene_id = rownames(res)
+  res = res %>% left_join(entrez, by="gene") %>% filter(!is.na(entrezgene))
+  lfc = data.frame(res)[, "log2FoldChange"]
+  lfcse = data.frame(res)[, "lfcSE"]
+  genes = lfc/lfcse
+  names(genes) = res$entrezgene
+  genes = genes[order(genes, decreasing=TRUE)]
+  genes = genes[order(genes, decreasing=TRUE)]
+  cc = summary(gseGO(genes, ont="CC", OrgDb=orgdb,
+               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               verbose=TRUE))
+  cc$ont = "CC"
+  mf = summary(gseGO(genes, ont="MF", OrgDb=orgdb,
+               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               verbose=TRUE))
+  mf$ont = "MF"
+  bp = summary(gseGO(genes, ont="bp", OrgDb=orgdb,
+               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               verbose=TRUE))
+  bp$ont = "BP"
+  kg = summary(gseKEGG(geneList=genes, organism=keggname, nPerm=500,
+                       pvalueCutoff=1, verbose=TRUE))
+  kg$ont = "KG"
+  combined = rbind(cc, mf, bp, kg)
+  combined$comparison = comparison
+  return(combined)
+}
+writeres = function(res, filename) {
+  write.table(res, file=filename, quote=FALSE, sep=",", row.names=FALSE,
+              col.names=TRUE)
+}
+```
+
+## Monocytes
+### RR vs HC
+```{r mono-rr-vs-hc-gsea}
+monorr_vs_hc_gsea = gsea_cp(monorr_vs_hc, "mono-rr-vs-hc")
+monorr_vs_hc_gsea_sig = subset(monorr_vs_hc_gsea, qvalues < 0.05)
+writeres(monorr_vs_hc_gsea_sig, "mono-rr-vs-hc-gsea.csv")
+sigplot = monorr_vs_hc_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[Monocytes, RR vs HC, GSEA](mono-rr-vs-hc-gsea.csv)
+
+### SP vs HC
+```{r mono-sp-vs-hc-gsea}
+monosp_vs_hc_gsea = gsea_cp(monosp_vs_hc, "mono-sp-vs-hc")
+monosp_vs_hc_gsea_sig = subset(monosp_vs_hc_gsea, qvalues < 0.05)
+writeres(monosp_vs_hc_gsea_sig, "mono-sp-vs-hc-gsea.csv")
+sigplot = monosp_vs_hc_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[Monocytes, SP vs HC, GSEA](mono-sp-vs-hc-gsea.csv)
+
+### SP vs RR
+```{r mono-sp-vs-rr-gsea}
+monosp_vs_rr_gsea = gsea_cp(monosp_vs_rr, "mono-sp-vs-rr")
+monosp_vs_rr_gsea_sig = subset(monosp_vs_rr_gsea, qvalues < 0.05)
+writeres(monosp_vs_rr_gsea_sig, "mono-sp-vs-rr-gsea.csv")
+sigplot = monosp_vs_rr_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[Monocytes, SP vs RR, GSEA](mono-sp-vs-rr-gsea.csv)
+
+## T-cells
+### RR vs HC
+```{r tcells-rr-vs-hc-gsea}
+tcellrr_vs_hc_gsea = gsea_cp(monorr_vs_hc, "mono-rr-vs-hc")
+tcellrr_vs_hc_gsea_sig = subset(tcellrr_vs_hc_gsea, qvalues < 0.05)
+writeres(tcellrr_vs_hc_gsea_sig, "tcell-rr-vs-hc-gsea.csv")
+sigplot = tcellrr_vs_hc_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[T-cells, RR vs HC, GSEA](tcell-rr-vs-hc-gsea.csv)
+
+### SP vs HC
+```{r tcell-sp-vs-hc-gsea}
+tcellsp_vs_hc_gsea = gsea_cp(tcellsp_vs_hc, "tcell-sp-vs-hc")
+tcellsp_vs_hc_gsea_sig = subset(tcellsp_vs_hc_gsea, qvalues < 0.05)
+writeres(tcellsp_vs_hc_gsea_sig, "tcell-sp-vs-hc-gsea.csv")
+sigplot = tcellsp_vs_hc_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[T-cells, SP vs HC, GSEA](tcell-sp-vs-hc-gsea.csv)
+
+### SP vs RR
+```{r tcell-sp-vs-rr}
+tcellsp_vs_rr_gsea = gsea_cp(tcellsp_vs_rr, "tcell-sp-vs-rr")
+tcellsp_vs_rr_gsea_sig = subset(tcellsp_vs_rr_gsea, qvalues < 0.05)
+writeres(tcellsp_vs_rr_gsea_sig, "tcell-sp-vs-rr-gsea.csv")
+sigplot = tcellsp_vs_rr_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[T-cells, SP vs RR, GSEA](tcell-sp-vs-rr-gsea.csv)
+
 # Summary
 # Output tables
 
