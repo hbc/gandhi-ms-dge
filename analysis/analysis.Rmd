@@ -645,6 +645,36 @@ ggplot(sigplot, aes(ont, nsig)) +
 
 [T-cells, SP vs RR, GSEA](tcell-sp-vs-rr-gsea.csv)
 
+### MS vs Control, Monocytes
+```{r ms-vs-control-monocytes-gsea}
+monoaffected_gsea = gsea_cp(monoaffected, "mono-ms-vs-control-gsea")
+monoaffected_gsea_sig = subset(monoaffected_gsea, qvalues < 0.05)
+writeres(monoaffected_gsea_sig, "mono-ms-vs-control-gsea.csv")
+sigplot = monoaffected_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[Monocytes, MS vs affected GSEA](mono-ms-vs-control-gsea.csv)
+
+### MS vs Control, Tcells
+```{r ms-vs-control-tcells-gsea}
+tcellaffected_gsea = gsea_cp(tcellaffected, "tcell-ms-vs-control-gsea")
+tcellaffected_gsea_sig = subset(tcellaffected_gsea, qvalues < 0.05)
+writeres(tcellaffected_gsea_sig, "tcell-ms-vs-control-gsea.csv")
+sigplot = tcellaffected_gsea_sig %>%
+  group_by(ont) %>% summarise(nsig=n())
+ggplot(sigplot, aes(ont, nsig)) +
+  geom_bar(stat='identity') +
+  xlab("Gene set type") +
+  ylab("Number of sets significant")
+```
+
+[Tcells, MS vs affected GSEA](tcell-ms-vs-control-gsea.csv)
+
 # Summary
 # Output tables
 
