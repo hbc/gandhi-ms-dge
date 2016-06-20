@@ -602,7 +602,7 @@ ggplot(sigplot, aes(ont, nsig)) +
 ## T-cells
 ### RR vs HC
 ```{r tcells-rr-vs-hc-gsea}
-tcellrr_vs_hc_gsea = gsea_cp(monorr_vs_hc, "mono-rr-vs-hc")
+tcellrr_vs_hc_gsea = gsea_cp(tcellrr_vs_hc, "tc-rr-vs-hc")
 tcellrr_vs_hc_gsea_sig = subset(tcellrr_vs_hc_gsea, qvalues < 0.05)
 writeres(tcellrr_vs_hc_gsea_sig, "tcell-rr-vs-hc-gsea.csv")
 sigplot = tcellrr_vs_hc_gsea_sig %>%
