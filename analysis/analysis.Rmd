@@ -44,6 +44,7 @@ library(tidyr)
 library(ggplot2)
 library(cowplot)
 library(viridis)
+set.seed(127187, kind = NULL, normal.kind = NULL)
 counts = read_tsv("../data/SSF-1505_plate_GTAGAGGA.unq.refseq.umi.dat") %>%
   as.data.frame()
 rownames(counts) = counts[, 1]
@@ -51,6 +52,7 @@ counts[,1] = NULL
 cnames = unlist(lapply(strsplit(colnames(counts), split="_"), tail, n=1))
 colnames(counts) = cnames
 head(counts)
+
 ```
 
 We'll also read in the CSV of metadata and place some of the information
