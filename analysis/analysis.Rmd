@@ -295,7 +295,7 @@ together before doing differential expression.
 monomelt = monocounts %>% add_rownames() %>%
   tidyr::gather(cell, count, -rowname) %>%
   left_join(monometa, by="cell") %>%
-  select(rowname, sample, count) %>%
+  dplyr::select(rowname, sample, count) %>%
   group_by(rowname, sample) %>%
   summarise(total=sum(count)) %>%
   tidyr::spread(sample, total) %>% as.data.frame()
@@ -304,7 +304,7 @@ monomelt$rowname = NULL
 monomelt = monomelt[rowSums(monomelt) > 0,]
 monometa = monometa %>% group_by(sample) %>%
   filter(row_number() == 1) %>%
-  select(-cell)
+  dplyr::select(-cell)
 monometa = as.data.frame(monometa)
 rownames(monometa) = monometa$sample
 monomelt = monomelt[, rownames(monometa)]
@@ -312,7 +312,7 @@ monomelt = monomelt[, rownames(monometa)]
 tcellmelt = tcellcounts %>% add_rownames() %>%
   tidyr::gather(cell, count, -rowname) %>%
   left_join(tcellmeta, by="cell") %>%
-  select(rowname, sample, count) %>%
+  dplyr::select(rowname, sample, count) %>%
   group_by(rowname, sample) %>%
   summarise(total=sum(count)) %>%
   tidyr::spread(sample, total) %>% as.data.frame()
@@ -321,7 +321,7 @@ tcellmelt$rowname = NULL
 tcellmelt = tcellmelt[rowSums(tcellmelt) > 0,]
 tcellmeta = tcellmeta %>% group_by(sample) %>%
   filter(row_number() == 1) %>%
-  select(-cell)
+  dplyr::select(-cell)
 tcellmeta = as.data.frame(tcellmeta)
 rownames(tcellmeta) = tcellmeta$sample
 tcellmelt = tcellmelt[, rownames(tcellmeta)]
@@ -331,6 +331,14 @@ tcellmelt = tcellmelt[, rownames(tcellmeta)]
 We will fit the model to the two different celltypes separately. We fit
 a model of the form: `~group+phenotype` where we compare only the cells
 from the same group to each other and look for differences in phenotype.
+
+```{r utility-functions}
+plotMA_full = function(res) {
+  ymax = max(res$log2FoldChange, na.rm=TRUE)
+  ymin = min(res$log2FoldChange, na.rm=TRUE)
+  plotMA(res, ylim=c(ymin, ymax))
+}
+  ```
 
 ## Monocytes
 The dispersion plot looks awesome, in this plot the black dots are the
@@ -351,7 +359,7 @@ plotDispEsts(monodds)
 ### RR vs HC
 ```{r mono-hc-rr}
 monorr_vs_hc = results(monodds, contrast=c("phenotype", "RR", "HC"))
-plotMA(monorr_vs_hc)
+plotMA_full(monorr_vs_hc)
 monorr_vs_hc = monorr_vs_hc[order(monorr_vs_hc$padj),]
 monorr_vs_hc = data.frame(cbind(data.frame(gene=rownames(monorr_vs_hc)), monorr_vs_hc))
 monorr_vs_hc_sig = subset(monorr_vs_hc, padj < 0.1)
@@ -368,7 +376,7 @@ are down in the `RR` samples.
 ### SP vs HC
 ```{r mono-vs-sp}
 monosp_vs_hc = results(monodds, contrast=c("phenotype", "SP", "HC"))
-plotMA(monosp_vs_hc)
+plotMA_full(monosp_vs_hc)
 monosp_vs_hc = monosp_vs_hc[order(monosp_vs_hc$padj),]
 monosp_vs_hc = data.frame(cbind(data.frame(gene=rownames(monosp_vs_hc)), monosp_vs_hc))
 monosp_vs_hc_sig = subset(monosp_vs_hc, padj < 0.1)
@@ -385,7 +393,7 @@ are down in the `SP` samples.
 ### SP vs RR
 ```{r mono-sp-rr}
 monosp_vs_rr = results(monodds, contrast=c("phenotype", "SP", "RR"))
-plotMA(monosp_vs_rr)
+plotMA_full(monosp_vs_rr)
 monosp_vs_rr = monosp_vs_rr[order(monosp_vs_rr$padj),]
 monosp_vs_rr = data.frame(cbind(data.frame(gene=rownames(monosp_vs_rr)), monosp_vs_rr))
 monosp_vs_rr_sig = subset(monosp_vs_rr, padj < 0.1)
@@ -413,7 +421,7 @@ plotDispEsts(tcelldds)
 ### RR vs HC
 ```{r tcells-hc-rr}
 tcellrr_vs_hc = results(tcelldds, contrast=c("phenotype", "RR", "HC"))
-plotMA(tcellrr_vs_hc)
+plotMA_full(tcellrr_vs_hc)
 tcellrr_vs_hc = tcellrr_vs_hc[order(tcellrr_vs_hc$padj),]
 tcellrr_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellrr_vs_hc)), tcellrr_vs_hc))
 tcellrr_vs_hc_sig = subset(tcellrr_vs_hc, padj < 0.1)
@@ -430,7 +438,7 @@ are down in the `RR` samples.
 ### SP vs HC
 ```{r tcells-sp-hc}
 tcellsp_vs_hc = results(tcelldds, contrast=c("phenotype", "SP", "HC"))
-plotMA(tcellsp_vs_hc)
+plotMA_full(tcellsp_vs_hc)
 tcellsp_vs_hc = tcellsp_vs_hc[order(tcellsp_vs_hc$padj),]
 tcellsp_vs_hc = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_hc)), tcellsp_vs_hc))
 tcellsp_vs_hc_sig = subset(tcellsp_vs_hc, padj < 0.1)
@@ -447,7 +455,7 @@ are down in the `SP` samples.
 ### SP vs RR
 ```{r tcells-sp-rr}
 tcellsp_vs_rr = results(tcelldds, contrast=c("phenotype", "SP", "RR"))
-plotMA(tcellsp_vs_rr)
+plotMA_full(tcellsp_vs_rr)
 tcellsp_vs_rr = tcellsp_vs_rr[order(tcellsp_vs_rr$padj),]
 tcellsp_vs_rr = data.frame(cbind(data.frame(gene=rownames(tcellsp_vs_rr)), tcellsp_vs_rr))
 tcellsp_vs_rr_sig = subset(tcellsp_vs_rr, padj < 0.1)
@@ -471,7 +479,7 @@ monoaffecteddds = DESeqDataSetFromMatrix(countData=monomelt,
 monoaffecteddds = estimateSizeFactors(monoaffecteddds)
 monoaffecteddds = DESeq(monoaffecteddds)
 monoaffected = results(monoaffecteddds, contrast=c("affected", "affected", "unaffected"))
-plotMA(monoaffected)
+plotMA_full(monoaffected)
 monoaffected = monoaffected[order(monoaffected$padj),]
 monoaffected = data.frame(cbind(data.frame(gene=rownames(monoaffected)), monoaffected))
 monoaffected_sig = subset(monoaffected, padj < 0.1)
@@ -494,7 +502,7 @@ tcellaffecteddds = DESeqDataSetFromMatrix(countData=tcellmelt,
 tcellaffecteddds = estimateSizeFactors(tcellaffecteddds)
 tcellaffecteddds = DESeq(tcellaffecteddds)
 tcellaffected = results(tcellaffecteddds, contrast=c("affected", "affected", "unaffected"))
-plotMA(tcellaffected)
+plotMA_full(tcellaffected)
 tcellaffected = tcellaffected[order(tcellaffected$padj),]
 tcellaffected = data.frame(cbind(data.frame(gene=rownames(tcellaffected)), tcellaffected))
 tcellaffected_sig = subset(tcellaffected, padj < 0.1)
@@ -514,6 +522,7 @@ biomart_dataset = "hsapiens_gene_ensembl"
 keggname = "hsa"
 orgdb = "org.Hs.eg.db"
 library(clusterProfiler)
+library(DOSE)
 library(orgdb, character.only=TRUE)
 library(biomaRt)
 mart = biomaRt::useMart(biomart = "ensembl", dataset=biomart_dataset)
@@ -531,21 +540,27 @@ gsea_cp = function(res, comparison) {
   genes = genes[order(genes, decreasing=TRUE)]
   genes = genes[order(genes, decreasing=TRUE)]
   cc = summary(gseGO(genes, ont="CC", OrgDb=orgdb,
-               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               nPerm=500, minGSSize=10, pvalueCutoff=1, pAdjustMethod="BH",
                verbose=TRUE))
   cc$ont = "CC"
   mf = summary(gseGO(genes, ont="MF", OrgDb=orgdb,
-               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               nPerm=500, minGSSize=10, pvalueCutoff=1, pAdjustMethod="BH",
                verbose=TRUE))
   mf$ont = "MF"
   bp = summary(gseGO(genes, ont="bp", OrgDb=orgdb,
-               nPerm=500, minGSSize=100, pvalueCutoff=1, pAdjustMethod="BH",
+               nPerm=500, minGSSize=10, pvalueCutoff=1, pAdjustMethod="BH",
                verbose=TRUE))
   bp$ont = "BP"
-  kg = summary(gseKEGG(geneList=genes, organism=keggname, nPerm=500,
-                       pvalueCutoff=1, verbose=TRUE))
+  kg = summary(gseKEGG(geneList=genes, minGSSize=10, organism=keggname,
+                       nPerm=500, pvalueCutoff=1, verbose=TRUE))
   kg$ont = "KG"
   combined = rbind(cc, mf, bp, kg)
+  if(orgdb == "org.Hs.eg.db") {
+    do = summary(gseDO(geneList=genes, nPerm=500, minGSSize=10, pvalueCutoff=1,
+                       pAdjustMethod="BH", verbose=TRUE))
+    do$ont = "DO"
+    combined = rbind(combined, do)
+  }
   combined$comparison = comparison
   return(combined)
 }
