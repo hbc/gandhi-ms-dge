@@ -570,6 +570,9 @@ writeres = function(res, filename) {
 }
 ```
 
+```{r pathway-upsetR}
+```
+
 ## Monocytes
 ### RR vs HC
 ```{r mono-rr-vs-hc-gsea}
@@ -691,6 +694,60 @@ ggplot(sigplot, aes(ont, nsig)) +
 ```
 
 [Tcells, MS vs affected GSEA](tcell-ms-vs-control-gsea.csv)
+
+## Pathway overlap {.tabset}
+These look at the overlap between the two cell types in pathways/ontologies/disease
+terms identified as differentially regulated by GSEA.
+
+```{r overlap-gsea-fn}
+overlap_gsea = function(sig1, sig2) {
+  overlap = intersect(sig1$ID, sig2$ID)
+  pathways = subset(sig1, ID %in% overlap)[, c("ID", "Description", "ont",
+                                               "comparison")]
+  return(pathways)
+}
+```
+
+### RR vs HC
+```{r overlap-rr-hc}
+rr_vs_hc_gsea_overlap = overlap_gsea(monorr_vs_hc_gsea_sig, tcellrr_vs_hc_gsea_sig)
+knitr::kable(rr_vs_hc_gsea_overlap)
+write.table(rr_vs_hc_gsea_overlap, file="rr-vs-hc-gsea-overlap.csv", sep=",",
+            row.names=FALSE, col.names=TRUE, quote=FALSE)
+```
+
+[RR vs HC GSEA overlap](rr-vs-hc-gsea-overlap.csv)
+
+### SP vs HC
+```{r overlap-sp-vs-hc}
+sp_vs_hc_gsea_overlap = overlap_gsea(monosp_vs_hc_gsea_sig, tcellsp_vs_hc_gsea_sig)
+knitr::kable(sp_vs_hc_gsea_overlap)
+write.table(sp_vs_hc_gsea_overlap, file="sp-vs-hc-gsea-overlap.csv", sep=",",
+            row.names=FALSE, col.names=TRUE, quote=FALSE)
+```
+
+[SP vs HC GSEA overlap](sp-vs-hc-gsea-overlap.csv)
+
+### SP vs RR
+```{r overlap-sp-vs-rr}
+sp_vs_rr_gsea_overlap = overlap_gsea(monosp_vs_rr_gsea_sig, tcellsp_vs_rr_gsea_sig)
+knitr::kable(sp_vs_rr_gsea_overlap)
+write.table(sp_vs_rr_gsea_overlap, file="sp-vs-rr-gsea-overlap.csv", sep=",",
+            row.names=FALSE, col.names=TRUE, quote=FALSE)
+```
+
+[SP vs RR GSEA overlap](sp-vs-rr-gsea-overlap.csv)
+
+### MS vs Control
+```{r overlap-ms-vs-control}
+ms_gsea_overlap = overlap_gsea(monoaffected_gsea_sig, tcellaffected_gsea_sig)
+knitr::kable(ms_gsea_overlap)
+write.table(ms_gsea_overlap, file="ms-gsea-overlap.csv", sep=",",
+            row.names=FALSE, col.names=TRUE, quote=FALSE)
+```
+
+[MS vs control GSEA overlap](ms-gsea-overlap.csv)
+
 
 # Summary
 # Output tables

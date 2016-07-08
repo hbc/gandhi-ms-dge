@@ -1,0 +1,6 @@
+ID,Description,ont,comparison
+hsa01200,Carbon metabolism,KG,mono-rr-vs-hc
+hsa04146,Peroxisome,KG,mono-rr-vs-hc
+hsa03050,Proteasome,KG,mono-rr-vs-hc
+hsa05134,Legionellosis,KG,mono-rr-vs-hc
+hsa00020,Citrate cycle (TCA cycle),KG,mono-rr-vs-hc

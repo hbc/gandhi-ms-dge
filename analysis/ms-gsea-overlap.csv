@@ -1,0 +1,46 @@
+ID,Description,ont,comparison
+GO:0000313,organellar ribosome,CC,mono-ms-vs-control-gsea
+GO:0005761,mitochondrial ribosome,CC,mono-ms-vs-control-gsea
+GO:0005759,mitochondrial matrix,CC,mono-ms-vs-control-gsea
+GO:0000314,organellar small ribosomal subunit,CC,mono-ms-vs-control-gsea
+GO:0005763,mitochondrial small ribosomal subunit,CC,mono-ms-vs-control-gsea
+hsa04380,Osteoclast differentiation,KG,mono-ms-vs-control-gsea
+hsa04912,GnRH signaling pathway,KG,mono-ms-vs-control-gsea
+hsa04919,Thyroid hormone signaling pathway,KG,mono-ms-vs-control-gsea
+hsa05206,MicroRNAs in cancer,KG,mono-ms-vs-control-gsea
+hsa05152,Tuberculosis,KG,mono-ms-vs-control-gsea
+hsa05416,Viral myocarditis,KG,mono-ms-vs-control-gsea
+hsa04146,Peroxisome,KG,mono-ms-vs-control-gsea
+hsa05322,Systemic lupus erythematosus,KG,mono-ms-vs-control-gsea
+hsa00280,Valine, leucine and isoleucine degradation,KG,mono-ms-vs-control-gsea
+hsa05012,Parkinson's disease,KG,mono-ms-vs-control-gsea
+hsa05140,Leishmaniasis,KG,mono-ms-vs-control-gsea
+hsa00480,Glutathione metabolism,KG,mono-ms-vs-control-gsea
+hsa04911,Insulin secretion,KG,mono-ms-vs-control-gsea
+hsa05010,Alzheimer's disease,KG,mono-ms-vs-control-gsea
+hsa04971,Gastric acid secretion,KG,mono-ms-vs-control-gsea
+hsa01200,Carbon metabolism,KG,mono-ms-vs-control-gsea
+hsa05016,Huntington's disease,KG,mono-ms-vs-control-gsea
+hsa05164,Influenza A,KG,mono-ms-vs-control-gsea
+DOID:2468,psychotic disorder,DO,mono-ms-vs-control-gsea
+DOID:1579,respiratory system disease,DO,mono-ms-vs-control-gsea
+DOID:10652,Alzheimer's disease,DO,mono-ms-vs-control-gsea
+DOID:680,tauopathy,DO,mono-ms-vs-control-gsea
+DOID:0050161,lower respiratory tract disease,DO,mono-ms-vs-control-gsea
+DOID:114,heart disease,DO,mono-ms-vs-control-gsea
+DOID:7148,rheumatoid arthritis,DO,mono-ms-vs-control-gsea
+DOID:1936,atherosclerosis,DO,mono-ms-vs-control-gsea
+DOID:2348,arteriosclerotic cardiovascular disease,DO,mono-ms-vs-control-gsea
+DOID:2320,obstructive lung disease,DO,mono-ms-vs-control-gsea
+DOID:2349,arteriosclerosis,DO,mono-ms-vs-control-gsea
+DOID:850,lung disease,DO,mono-ms-vs-control-gsea
+DOID:10763,hypertension,DO,mono-ms-vs-control-gsea
+DOID:5844,myocardial infarction,DO,mono-ms-vs-control-gsea
+DOID:1724,duodenal ulcer,DO,mono-ms-vs-control-gsea
+DOID:3083,chronic obstructive pulmonary disease,DO,mono-ms-vs-control-gsea
+DOID:26,pancreas disease,DO,mono-ms-vs-control-gsea
+DOID:3213,demyelinating disease,DO,mono-ms-vs-control-gsea
+DOID:4989,pancreatitis,DO,mono-ms-vs-control-gsea
+DOID:3393,coronary artery disease,DO,mono-ms-vs-control-gsea
+DOID:3905,lung carcinoma,DO,mono-ms-vs-control-gsea
+DOID:3908,non-small cell lung carcinoma,DO,mono-ms-vs-control-gsea
