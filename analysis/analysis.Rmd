@@ -748,6 +748,17 @@ write.table(ms_gsea_overlap, file="ms-gsea-overlap.csv", sep=",",
 
 [MS vs control GSEA overlap](ms-gsea-overlap.csv)
 
+### Monocyte pathway overlap
+This writes out the GSEA terms that are different in the three way comparisons
+between monocyte SP vs HC, monocyte SP vs RR and monocyte RR vs HC.
+
+```{r overlap-monocyte-pathways}
+monocyte_gsea_overlap = overlap_gsea(monosp_vs_hc_gsea_sig, monosp_vs_rr_gsea_sig)
+monocyte_gsea_overlap = overlap_gsea(monocyte_gsea_overlap, monorr_vs_hc_gsea_sig)
+knitr::kable(monocyte_gsea_overlap)
+write.table(ms_gsea_overlap, file="monocyte-pathway-overlap.csv", sep=",",
+            row.names=FALSE, col.names=TRUE, quote=FALSE)
+```
 
 # Summary
 # Output tables
@@ -784,3 +795,5 @@ write.table(ntcellcounts, file="tcellcounts_normalized.csv", row.names=FALSE,
 [Normalized counts for monocytes](monocounts_normalized.csv)
 
 [Normalized counts for T cells](tcellcounts_normalized.csv)
+
+#
