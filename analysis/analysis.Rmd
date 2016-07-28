@@ -760,6 +760,8 @@ write.table(ms_gsea_overlap, file="monocyte-pathway-overlap.csv", sep=",",
             row.names=FALSE, col.names=TRUE, quote=FALSE)
 ```
 
+[Monocyte pathway overlap](monocyte-pathway-overlap.csv)
+
 # Summary
 # Output tables
 
