@@ -808,6 +808,7 @@ cvdf = data.frame(gene=names(cv), cv=cv, mean=rowMeans(counts)) %>%
   arrange(cv)
 write.table(cvdf, file="cv-and-means.csv", col.names=TRUE, sep=",",
             quote=FALSE, row.names=FALSE)
+ggplot(cvdf, aes(cv)) + geom_histogram()
 ```
 
 [Coefficient of variation](cv-and-means.csv)
