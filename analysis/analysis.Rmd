@@ -798,4 +798,16 @@ write.table(ntcellcounts, file="tcellcounts_normalized.csv", row.names=FALSE,
 
 [Normalized counts for T cells](tcellcounts_normalized.csv)
 
-#
+# Possible housekeeping genes
+Here we calculate the coefficient of variation for all genes and rank them.
+
+```{r housekeeping-rank}
+library(matrixStats)
+cv = rowSds(as.matrix(counts)) / rowMeans(as.matrix(counts))
+cvdf = data.frame(gene=names(cv), cv=cv, mean=rowMeans(counts)) %>%
+  arrange(cv)
+write.table(cvdf, file="cv-and-means.csv", col.names=TRUE, sep=",",
+            quote=FALSE, row.names=FALSE)
+```
+
+[Coefficient of variation](cv-and-means.csv)
